@@ -32,7 +32,8 @@ public class MovieController {
         if (movieService.getMovieById(id) != null) {
             return ResponseEntity.ok(movieService.getMovieById(id));
         } else {
-            throw new NotFoundException("Not found -- 404");
+            //throw new NotFoundException("Not found -- 404");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -47,7 +48,8 @@ public class MovieController {
             addedMovie = movieService.addMovie(addedMovie);
             return ResponseEntity.ok(addedMovie);
         } else {
-            throw new BadRequestException("Bad request -- 400");
+            //throw new BadRequestException("Bad request -- 400");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -64,9 +66,11 @@ public class MovieController {
                 return ResponseEntity.ok(updatedMovie);
             }
         } else {
-            throw new NotFoundException("Not found -- 404");
+            //throw new NotFoundException("Not found -- 404");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        throw new BadRequestException("Bad request -- 400");
+        //throw new BadRequestException("Bad request -- 400");
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{id}")
@@ -75,7 +79,8 @@ public class MovieController {
             movieService.deleteMovie(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            throw new NotFoundException("Not found -- 404");
+            //throw new NotFoundException("Not found -- 404");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
