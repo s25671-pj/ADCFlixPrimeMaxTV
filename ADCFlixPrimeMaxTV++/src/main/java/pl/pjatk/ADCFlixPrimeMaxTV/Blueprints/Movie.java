@@ -1,23 +1,41 @@
 package pl.pjatk.ADCFlixPrimeMaxTV.Blueprints;
 
+import jakarta.persistence.*;
+
+@Entity
+@NamedQueries({
+        @NamedQuery(name = "Movie.findAll", query = "SELECT m FROM Movie m"),
+        @NamedQuery(name = "Movie.find1", query = "SELECT m FROM Movie m WHERE m.id = :id"),
+        @NamedQuery(name = "Movie.update", query = "UPDATE Movie m SET m.name = :name, m.category = :category, m.price = :price WHERE m.id = :id"),
+        @NamedQuery(name = "Movie.delete", query = "DELETE FROM Movie m WHERE m.id = :id")
+})
 public class Movie {
 
-    private int id;
-    //private static int incId = 1;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Enumerated(EnumType.STRING)
     private Category category;
     private String name;
     private Double price;
 
+    @Column(name = "is_available", columnDefinition = "TINYINT(1)")
+    private Boolean isAvailable;
 
-    public Movie(int id, String name, Double price, Category category) {
-        //this.id = incId++;
+
+    public Movie(Long id, String name, Double price, Category category, Boolean isAvailable) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.category = category;
+        this.isAvailable = isAvailable;
     }
 
-    public Integer getId() {
+    public Movie() {
+
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -33,7 +51,7 @@ public class Movie {
         return price;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,5 +65,13 @@ public class Movie {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Boolean getAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(Boolean available) {
+        isAvailable = available;
     }
 }

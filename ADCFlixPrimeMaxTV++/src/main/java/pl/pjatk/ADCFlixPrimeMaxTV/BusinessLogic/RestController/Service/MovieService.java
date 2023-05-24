@@ -1,60 +1,55 @@
 package pl.pjatk.ADCFlixPrimeMaxTV.BusinessLogic.RestController.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import pl.pjatk.ADCFlixPrimeMaxTV.Blueprints.Category;
 import pl.pjatk.ADCFlixPrimeMaxTV.Blueprints.Movie;
-import pl.pjatk.ADCFlixPrimeMaxTV.BusinessLogic.ExceptionHandler.RTEClasses.NotFoundException;
+import pl.pjatk.ADCFlixPrimeMaxTV.Repository.MovieRepository;
 
 import java.util.List;
 
 @Service
 public class MovieService {
 
-    public List<Movie> getAllMovies() {
-        return List.of(new Movie(1, "Sin City", 25.0, Category.NOIR),
-                new Movie(2, "Niebezpieczni Dzentelmeni", 30.0, Category.POLISH),
-                new Movie(3, "The Nun", 28.5, Category.HORROR));
+    private final MovieRepository movieRepository;
+
+    public MovieService(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
     }
 
-    public Movie getMovieById(int id) {
-        List<Movie> allMovies = getAllMovies();
-        Movie movieById = null;
-        for (Movie movie : allMovies) {
-            if (movie.getId() == id) {
-                movieById = movie;
-                break;
-            }
-        }
-        return movieById;
+
+    public Movie getMovieById(Long id) {
+        return movieRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
     }
 
     public Movie addMovie(Movie movie) {
-        return new Movie(movie.getId(), movie.getName(),
-                movie.getPrice(), movie.getCategory());
+        return movieRepository.save(movie);
     }
 
-    public Movie updateMovie(int id) {
+    public Movie updateMovie(Long id, Movie updatedMovie) {
 
-        Movie movieById = getMovieById(id);
-        if (movieById != null) {
-            movieById.setName(movieById.getName());
-            movieById.setCategory(movieById.getCategory());
-            movieById.setPrice(movieById.getPrice());
-            return movieById;
-        } else {
-            throw new NotFoundException("Not found -- 404");
-        }
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
+
+        movie.setName(updatedMovie.getName());
+        movie.setCategory(updatedMovie.getCategory());
+        movie.setPrice(updatedMovie.getPrice());
+        return movieRepository.save(movie);
     }
 
-    public void deleteMovie(int id){
-        Movie movieById = getMovieById(id);
-        if(movieById != null){
-            movieById.setName(null);
-            movieById.setCategory(null);
-            movieById.setPrice(null);
+    public void deleteMovie(Long id) {
+        movieRepository.deleteById(id);
+    }
 
-        }else {
-            throw new NotFoundException("Not found -- 404");
-        }
+    public List<Movie> getAllMovies() {
+        return movieRepository.findAll();
+    }
+
+    public Movie makeAvailable(Long id, Boolean available) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Movie with id: " + id +
+                        " not found."));
+        movie.setAvailable(available);
+        return movieRepository.save(movie);
     }
 }

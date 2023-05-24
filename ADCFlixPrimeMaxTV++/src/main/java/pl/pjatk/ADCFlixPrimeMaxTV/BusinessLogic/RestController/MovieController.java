@@ -5,8 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import pl.pjatk.ADCFlixPrimeMaxTV.Blueprints.Movie;
-import pl.pjatk.ADCFlixPrimeMaxTV.BusinessLogic.ExceptionHandler.RTEClasses.BadRequestException;
-import pl.pjatk.ADCFlixPrimeMaxTV.BusinessLogic.ExceptionHandler.RTEClasses.NotFoundException;
 import pl.pjatk.ADCFlixPrimeMaxTV.BusinessLogic.RestController.Service.MovieService;
 
 import java.util.List;
@@ -28,11 +26,10 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable int id) {
+    public ResponseEntity<Movie> getMovieById(@PathVariable Long id) {
         if (movieService.getMovieById(id) != null) {
             return ResponseEntity.ok(movieService.getMovieById(id));
         } else {
-            //throw new NotFoundException("Not found -- 404");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -48,38 +45,54 @@ public class MovieController {
             addedMovie = movieService.addMovie(addedMovie);
             return ResponseEntity.ok(addedMovie);
         } else {
-            //throw new BadRequestException("Bad request -- 400");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Movie> updateSomeMovie(@RequestBody Movie updatedMovie, @PathVariable int id) {
+    public ResponseEntity<Movie> updateSomeMovie(@RequestBody Movie updatedMovie, @PathVariable Long id) {
         if (movieService.getMovieById(id) != null) {
             if (updatedMovie.getName() != null
                     && updatedMovie.getCategory() != null
                     && updatedMovie.getPrice() != null) {
 
                 updatedMovie.setId(id);
-                movieService.updateMovie(id);
+                movieService.updateMovie(id, updatedMovie);
                 return ResponseEntity.ok(updatedMovie);
             }
         } else {
-            //throw new NotFoundException("Not found -- 404");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        //throw new BadRequestException("Bad request -- 400");
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSomeMovie(@PathVariable int id) {
+    public ResponseEntity<Void> deleteSomeMovie(@PathVariable Long id) {
         if (movieService.getMovieById(id) != null) {
             movieService.deleteMovie(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            //throw new NotFoundException("Not found -- 404");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("ava/{id}")
+    public ResponseEntity<Movie> setAvailable(@PathVariable Long id) {
+        if (movieService.getMovieById(id) != null) {
+            movieService.makeAvailable(id, true);
+            return ResponseEntity.ok().build();
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("nava/{id}")
+    public ResponseEntity<Movie> setNotAvailable(@PathVariable Long id) {
+        if (movieService.getMovieById(id) != null) {
+            movieService.makeAvailable(id, false);
+            return ResponseEntity.ok().build();
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
