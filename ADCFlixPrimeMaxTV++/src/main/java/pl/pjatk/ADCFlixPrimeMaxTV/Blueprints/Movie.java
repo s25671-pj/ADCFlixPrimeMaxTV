@@ -1,24 +1,27 @@
 package pl.pjatk.ADCFlixPrimeMaxTV.Blueprints;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@NamedQueries({
-        @NamedQuery(name = "Movie.findAll", query = "SELECT m FROM Movie m"),
-        @NamedQuery(name = "Movie.find1", query = "SELECT m FROM Movie m WHERE m.id = :id"),
-        @NamedQuery(name = "Movie.update", query = "UPDATE Movie m SET m.name = :name, m.category = :category, m.price = :price WHERE m.id = :id"),
-        @NamedQuery(name = "Movie.delete", query = "DELETE FROM Movie m WHERE m.id = :id")
-})
 public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
     @Enumerated(EnumType.STRING)
     private Category category;
+    @NotBlank
+    @Size(min = 1, max = 255)
     private String name;
+
+    @NotBlank
+    @Size(max = 100)
     private Double price;
 
+    @NotBlank
     @Column(name = "is_available", columnDefinition = "TINYINT(1)")
     private Boolean isAvailable;
 

@@ -1,6 +1,7 @@
 package pl.pjatk.ADCFlixPrimeMaxTV.BusinessLogic.RestController.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pl.pjatk.ADCFlixPrimeMaxTV.Blueprints.Movie;
 import pl.pjatk.ADCFlixPrimeMaxTV.Repository.MovieRepository;
@@ -45,11 +46,12 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
-    public Movie makeAvailable(Long id, Boolean available) {
+    public void makeAvailable(Long id, Boolean available) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movie with id: " + id +
                         " not found."));
         movie.setAvailable(available);
-        return movieRepository.save(movie);
+        movieRepository.makeAvailable(available, id);
     }
+
 }
